@@ -44,33 +44,37 @@ def ex_inters(inter, prop):
             for i in ex_inters(geom, prop):
                 yield i
 
-inters = []
-i = 0
-#Total combinations
-def nCr(n,r):
-    f = math.factorial
-    return f(n) / f(r) / f(n-r)
-tot = nCr(len(lines), 2)
-#Iterate, extract intersections
-for line1,line2 in itertools.combinations(lines, 2):
-    track(i, 10000, tot)
-    if line1[1].intersects(line2[1]):
-        inter = line1[1].intersection(line2[1])
-        inters.extend(ex_inters(inter, 
-                                {'id_1':line1[0], 'id_2':line2[0]}
-                               ))
-    i+=1
+if not os.path.exists('inters.pkl'):
+    inters = []
+    i = 0
+    #Total combinations
+    def nCr(n,r):
+        f = math.factorial
+        return f(n) / f(r) / f(n-r)
+    tot = nCr(len(lines), 2)
+    #Iterate, extract intersections
+    for line1,line2 in itertools.combinations(lines, 2):
+        track(i, 10000, tot)
+        if line1[1].intersects(line2[1]):
+            inter = line1[1].intersection(line2[1])
+            inters.extend(ex_inters(inter, 
+                                    {'id_1':line1[0], 'id_2':line2[0]}
+                                   ))
+        i+=1
 
-#Save to pickle in case script breaks    
-with open('inters.pkl', 'w') as f:
-    cPickle.dump(inters, f)
+    #Save to pickle in case script breaks    
+    with open('inters.pkl', 'w') as f:
+        cPickle.dump(inters, f)
+else:
+    with open('inters.pkl', 'w') as f:
+        inters = cPickle.load(f)
 
 # de duplicated
 inters_de = []
 # schema of the shapefile
 schema = {'geometry': 'Point', 
-          'properties': {'fid_1':'int',
-                        'fid_2':'int'}
+          'properties': {'id_1':'int',
+                        'id_2':'int'}
          }
 # creation of the shapefile
 with fiona.open('inters.shp','w','ESRI Shapefile', schema) as output:

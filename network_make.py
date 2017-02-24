@@ -2,6 +2,7 @@ import fiona
 import numpy as np
 import pandas as pd
 import sys
+import math
 from shapely.geometry import Point, shape, mapping
 import itertools
 import cPickle
@@ -46,10 +47,12 @@ def ex_inters(inter, prop):
 inters = []
 i = 0
 #Total combinations
-combs = [l1,l2 for l1,l2 in itertools.combinations(lines, 2)]
-tot = len(combs)
+def nCr(n,r):
+    f = math.factorial
+    return f(n) / f(r) / f(n-r)
+tot = nCr(len(lines), 2)
 #Iterate, extract intersections
-for line1,line2 in  combs:
+for line1,line2 in itertools.combinations(lines, 2):
     track(i, 10000, tot)
     if line1[1].intersects(line2[1]):
         inter = line1[1].intersection(line2[1])

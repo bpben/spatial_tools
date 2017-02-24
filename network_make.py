@@ -7,14 +7,14 @@ import itertools
 import cPickle
 
 #Import shapefile specified at commandline
-shp = sys.argv(1)
+shp = sys.argv[1]
 
 #Get all lines, dummy id
 lines = [
          (
-         i,
-         shape(line['geometry'])
-         ) for enumerate(line) in fiona.open(shp)
+         line[0],
+         shape(line[1]['geometry'])
+         ) for line in enumerate(fiona.open(shp))
         ]
 
 #Track progress
@@ -46,10 +46,11 @@ def ex_inters(inter, prop):
 inters = []
 i = 0
 #Total combinations
-combs = [l1,l2 for l1,l2 in itertools.combinations(lines, 2)]
+combs = [c for c in itertools.combinations(lines, 2)]
+print combs[0:10]
 tot = len(combs)
 #Iterate, extract intersections
-for line1,line2 in  combs:
+for line in combs:
     track(i, 10000, tot)
     if line1[1].intersects(line2[1]):
         inter = line1[1].intersection(line2[1])
@@ -74,7 +75,7 @@ with fiona.open('inters.shp','w','ESRI Shapefile', schema) as output:
     i = 0
     for pt in inters:
         if pt[0] not in inters_de:
-            track(i, 10000, len(inters)
+            track(i, 10000, len(inters))
             output.write({'geometry':mapping(pt[0]), 'properties':pt[1]})
             inters_de.append(pt[0])
             i+=1

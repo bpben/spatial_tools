@@ -8,14 +8,14 @@ import itertools
 import cPickle
 
 #Import shapefile specified at commandline
-shp = sys.argv(1)
+shp = sys.argv[1]
 
 #Get all lines, dummy id
 lines = [
          (
-         i,
-         shape(line['geometry'])
-         ) for enumerate(line) in fiona.open(shp)
+         line[0],
+         shape(line[1]['geometry'])
+         ) for line in enumerate(fiona.open(shp))
         ]
 
 #Track progress
@@ -77,7 +77,7 @@ with fiona.open('inters.shp','w','ESRI Shapefile', schema) as output:
     i = 0
     for pt in inters:
         if pt[0] not in inters_de:
-            track(i, 10000, len(inters)
+            track(i, 10000, len(inters))
             output.write({'geometry':mapping(pt[0]), 'properties':pt[1]})
             inters_de.append(pt[0])
             i+=1

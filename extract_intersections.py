@@ -1,6 +1,5 @@
 import fiona
 import numpy as np
-import pandas as pd
 import sys
 import math
 from shapely.geometry import Point, shape, mapping
